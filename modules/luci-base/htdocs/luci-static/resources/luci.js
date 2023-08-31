@@ -1906,6 +1906,7 @@
 				});
 
 			return ready
+				.then(awaitInit)
 				.then(LuCI.prototype.bind(this.load, this))
 				.then(LuCI.prototype.bind(this.render, this))
 				.then(LuCI.prototype.bind(function(nodes) {
@@ -2173,6 +2174,8 @@
 	let rpcBaseURL = null;
 	let sysFeatures = null;
 	let preloadClasses = null;
+	let awaitInit = null;
+	let awaitRpc = null;
 
 	/* "preload" builtin classes to make them available via require */
 	const classes = {
@@ -2211,13 +2214,25 @@
 				document.addEventListener('DOMContentLoaded', resolveFn);
 			});
 
-			Promise.all([
-				domReady,
-				this.require('ui'),
-				this.require('rpc'),
-				this.require('form'),
-				this.probeRPCBaseURL()
-			]).then(this.setupDOM.bind(this)).catch(this.error);
+			awaitRpc = Promise.all([
+				this.probeRPCWSSupport(),
+				this.probeRPCBaseURL(),
+				this.require('rpc')
+			]);
+
+			awaitRpc.then(([socket, url, rpcClass]) => {
+				rpcClass.setBaseURL(url);
+				rpcClass.setWebSocket(socket);
+
+				awaitInit = new Promise(resolveFn => {
+					Promise.all([
+						domReady,
+						this.require('ui'),
+						this.require('form'),
+
+					]).then(this.setupDOM.bind(this)).catch(this.error).finally(resolveFn);
+				});
+			});
 
 			originalCBIInit = window.cbi_init;
 			window.cbi_init = () => {};
@@ -2395,6 +2410,7 @@
 		 */
 		require(name, from = []) {
 			const L = this;
+			let path = null;
 			let url = null;
 
 			/* Class already loaded */
@@ -2408,6 +2424,7 @@
 				return Promise.resolve(classes[name]);
 			}
 
+			path = name.replace(/\./g, '/') + '.js';
 			url = '%s/%s.js%s'.format(env.base_url, name.replace(/\./g, '/'), (env.resource_version ? `?v=${env.resource_version}` : ''));
 			from = [ name ].concat(from);
 
@@ -2503,12 +2520,65 @@
 			};
 
 			/* Request class file */
-			classes[name] = Request.get(url, { cache: true }).then(compileClass);
+			if (name != 'rpc') {
+				classes[name] = awaitRpc.then(() => {
+					if (!classes.rpc.getWebSocket())
+						return Request.get(url, { cache: true }).then(compileClass);
+
+					return classes.rpc.requestResource(path).then(data => compileClass({
+						ok: true,
+						url: url,
+						text: () => data
+					}));
+				});
+			}
+			else {
+				classes[name] = Request.get(url, { cache: true }).then(compileClass);
+			}
 
 			return classes[name];
 		},
 
 		/* DOM setup */
+		probeRPCWSSupport: function() {
+			const ws_scheme = (location.protocol == 'https:') ? 'wss' : 'ws';
+			const ws_proto = 'org.openwrt.luci.v0';
+			const ws_path = this.url('admin/ws');
+
+			let rpcSock;
+
+			return new Promise(resolveFn => {
+				if (!env.ticket) {
+					console.debug('No WebSocket connection ticket available');
+					resolveFn(null);
+				}
+
+				rpcSock = new WebSocket(`${ws_scheme}://${location.host}${ws_path}`, [
+					ws_proto,
+					`${ws_proto}.ticket!${env.sessionid}!${env.ticket}`
+				]);
+
+				rpcSock.onopen = (ev) => {
+					resolveFn(rpcSock);
+				};
+
+				rpcSock.onmessage = (ev) => {
+					console.debug(`Got msg: ${ev.data}`);
+				};
+
+				rpcSock.onclose = (ev) => {
+					console.debug(`Connection closed:`, ev);
+					rpcSock = null;
+				};
+
+				rpcSock.onerror = (ev) => {
+					console.debug(`Connection error:`, ev);
+					rpcSock = null;
+					resolveFn(null);
+				};
+			});
+		},
+
 		probeRPCBaseURL() {
 			if (rpcBaseURL == null)
 				rpcBaseURL = Session.getLocalData('rpcBaseURL');
@@ -2639,12 +2709,8 @@
 		},
 
 		/* private */
-		setupDOM(res) {
-			const domEv = res[0], uiClass = res[1], rpcClass = res[2], formClass = res[3], rpcBaseURL = res[4];
-
-			rpcClass.setBaseURL(rpcBaseURL);
-
-			rpcClass.addInterceptor((msg, req) => {
+		setupDOM([domEv, uiClass, formClass]) {
+			classes.rpc.addInterceptor((msg, req) => {
 				if (!LuCI.prototype.isObject(msg) ||
 					!LuCI.prototype.isObject(msg.error) ||
 					msg.error.code != -32002)
@@ -2654,7 +2720,7 @@
 					(req.object == 'session' && req.method == 'access'))
 					return;
 
-				return rpcClass.declare({
+				return classes.rpc.declare({
 					'object': 'session',
 					'method': 'access',
 					'params': [ 'scope', 'object', 'function' ],
