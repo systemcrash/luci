@@ -695,14 +695,14 @@ return view.extend({
 		o.optional = true;
 		o.placeholder = '64.94.110.11';
 
-		o = s.taboption('subnettags', form.Value, 'networkid',
+		o = s.taboption('subnettags', form.Value, 'set_tag',
 			_('Set this Tag'),
 			_('Internal default: network name.') + '<br />' +
 			_('Set a tag for this network/range when other parameters match.'));
 		so.optional = true;
 		// so.noaliases = true;
 
-		o = s.taboption('subnettags', form.DynamicList, 'tag',
+		o = s.taboption('subnettags', form.DynamicList, 'match_tags',
 			_('Match Tags'),
 			_('List of tags that a DHCP client must have to use this DHCP network/range.') + '<br />' +
 			_('When a host matches an entry then the special tag %s is set. Use %s to match all known hosts.').format('<code>known</code>', '<code>known</code>') + '<br /><br />' +
@@ -837,7 +837,7 @@ return view.extend({
 		so.optional = true;
 		so.placeholder = 'option:root-path,192.168.1.2:/data/netboot/root';
 
-		so = ss.option(form.Value, 'networkid',
+		so = ss.option(form.Value, 'match_tag',
 			_('Match this Tag'),
 			_('Only DHCP Clients with this tag are sent this boot option.'));
 		so.optional = true;
@@ -1113,11 +1113,11 @@ return view.extend({
 			_('The IPv6 interface identifier (address suffix) as hexadecimal number (max. 16 chars).'));
 		so.datatype = 'and(rangelength(0,16),hexstring)';
 
-		so = ss.option(form.DynamicList, 'tag',
+		so = ss.option(form.DynamicList, 'set_tags',
 			_('Tag'),
 			_('Assign new, freeform tags to this entry.'));
 
-		so = ss.option(form.DynamicList, 'match_tag',
+		so = ss.option(form.DynamicList, 'match_tags',
 			_('Match Tag'),
 			_('When a host matches an entry then the special tag %s is set. Use %s to match all known hosts.').format('<code>known</code>', '<code>known</code>') + '<br /><br />' +
 			_('Ignore requests from unknown machines using %s.').format('<code>!known</code>') + '<br /><br />' +
@@ -1162,7 +1162,7 @@ return view.extend({
 		so.rmempty = false;
 		so.optional = false;
 
-		so = ss.option(form.Value, 'networkid', _('Set this Tag'));
+		so = ss.option(form.Value, 'set_tag', _('Set this Tag'));
 		so.rmempty = false;
 		so.optional = false;
 
@@ -1187,7 +1187,7 @@ return view.extend({
 		so.optional = true;
 		so.placeholder = '3,192.168.10.1,10.10.10.1';
 
-		so = ss.option(form.Value, 'tag', _('...To this matching Tag'));
+		so = ss.option(form.Value, 'match_tag', _('...To this matching Tag'));
 		so.rmempty = false;
 		so.optional = false;
 		so.placeholder = 'specialgateways';
@@ -1224,7 +1224,7 @@ return view.extend({
 		so.rmempty = false;
 		so.optional = false;
 
-		so = ss.option(form.Value, 'networkid', _('...to set this Tag'));
+		so = ss.option(form.Value, 'set_tag', _('...to set this Tag'));
 		so.rmempty = false;
 		so.optional = false;
 
@@ -1249,7 +1249,7 @@ return view.extend({
 		so.rmempty = false;
 		so.optional = false;
 
-		so = ss.option(form.Value, 'networkid', _('...to set this Tag'));
+		so = ss.option(form.Value, 'set_tag', _('...to set this Tag'));
 		so.rmempty = false;
 		so.optional = false;
 
@@ -1282,7 +1282,7 @@ return view.extend({
 		so.optional = false;
 		so.placeholder = '61,8c:80:90:01:02:03';
 
-		so = ss.option(form.Value, 'networkid', _('...to Set this Tag'));
+		so = ss.option(form.Value, 'set_tag', _('...to Set this Tag'));
 		so.rmempty = false;
 		so.optional = false;
 		so.placeholder = 'myuniqueclientid'
