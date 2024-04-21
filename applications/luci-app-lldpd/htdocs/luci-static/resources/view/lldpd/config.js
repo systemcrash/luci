@@ -11,6 +11,7 @@
 'require lldpd';
 'require network';
 'require uci';
+'require ui';
 'require tools.widgets as widgets';
 
 var callInitList = rpc.declare({
@@ -33,6 +34,195 @@ var callInitAction = rpc.declare({
 });
 
 var usage = _('See syntax <a %s>here</a>.').format('href=https://lldpd.github.io/usage.html target="_blank"');
+var hexCSVstring = _('CSV of 3 hex values, e.g. aa,ee,ff');
+
+var aclList = {};
+
+function chompIfAddOrReplace(str) {
+	// Regular expression to match 'add' or 'replace' at the beginning of the string
+	const regex = /^(add|replace)\s+/i;
+
+	// Check if the string starts with 'add' or 'replace'
+	const match = str.match(regex);
+
+	// If there's a match, remove the matched word from the string
+	if (match !== null) {
+		const firstWordLength = match[0].length;
+		return [str.slice(firstWordLength).trim(), match[0].trim()];
+	}
+
+	// If no match, return the original string
+	return [str, ' '];
+}
+
+function intToHexStr(int, uc) {
+	// return 00-FF for 0-255 int
+	var number = parseInt(int);
+	var str = number < 16 ? '0' + number.toString(16) : number.toString(16);
+	if (uc) return str.toUpperCase();
+	return str;
+}
+
+var cbiCustomTLV = form.Value.extend({
+	renderWidget: function(section_id, option_index, cfgvalue) {
+		var addMatches = [],
+			replaceMatches = [];
+
+		var insvalue = '',
+			ouivalue = '',
+			typvalue = '',
+			infvalue = '';
+		var insplaceholder = _('Insert behaviour');
+		var ouiplaceholder = hexCSVstring;
+		var typplaceholder = '0-255 (00-FF)';
+		var infplaceholder =  hexCSVstring;
+		var inschoices = ['default', 'add', 'replace'];
+
+		// var typchoices = Array.from(Array(256).keys());
+		var typchoices = Array.from({length: 256}, (_, index) => index + " ("+intToHexStr(index, true)+")" );
+
+		var widgetINS, widgetTYP, widgetOUI, widgetINF;
+
+		widgetINS = new ui.Select(Array.isArray(insvalue) ? insvalue.join(' ') : insvalue, inschoices, {
+			id: this.cbid(section_id),
+			sort: this.keylist,
+			// choices: this.transformChoices(),
+			optional: this.insoptional || this.insrmempty,
+			datatype: this.insdatatype,
+			select_placeholder: this.insplaceholder || insplaceholder,
+			// validate: this.insvalidate, //L.bind(this.insvalidate, this, section_id),
+			validate: L.bind(this.insvalidate, this, section_id),
+			disabled: (this.readonly != null) ? this.readonly : this.map.readonly
+		});
+
+		widgetOUI = new ui.Textfield(Array.isArray(ouivalue) ? ouivalue.join(' ') : ouivalue, {
+			id: this.cbid(section_id),
+			password: this.ouipassword,
+			optional: this.ouioptional || this.ouirmempty,
+			datatype: this.ouidatatype,
+			placeholder: this.ouiplaceholder || ouiplaceholder,
+			validate: L.bind(this.ouivalidate, this, section_id),
+			// validate: this.ouivalidate, //L.bind(this.ouivalidate, this, section_id),
+			disabled: (this.readonly != null) ? this.readonly : this.map.readonly
+		});
+
+		// widgetTYP = new ui.Textfield(Array.isArray(typvalue) ? typvalue.join(' ') : typvalue, {
+		// 	id: this.cbid(section_id),
+		// 	password: this.typpassword,
+		// 	optional: this.typoptional || this.typrmempty,
+		// 	datatype: this.typdatatype,
+		// 	placeholder: this.typplaceholder,
+		// 	validate: this.typvalidate || null, //L.bind(this.typvalidate, this, section_id),
+		// 	disabled: (this.readonly != null) ? this.readonly : this.map.readonly
+		// });
+
+		widgetTYP = new ui.Select(Array.isArray(typvalue) ? typvalue.join(' ') : typvalue, typchoices, {
+			id: this.cbid(section_id),
+			sort: this.keylist,
+			optional: this.typoptional || this.typrmempty,
+			datatype: this.typdatatype,
+			select_placeholder: this.typplaceholder || typplaceholder,
+			validate: this.typvalidate, //L.bind(this.typvalidate, this, section_id),
+			disabled: (this.readonly != null) ? this.readonly : this.map.readonly
+		});
+
+		widgetINF = new ui.Textfield(Array.isArray(infvalue) ? infvalue.join(' ') : infvalue, {
+			id: this.cbid(section_id),
+			password: this.infpassword,
+			optional: this.infoptional || this.infrmempty,
+			datatype: this.infdatatype || null,
+			placeholder: this.infplaceholder || infplaceholder,
+			validate: L.bind(this.infvalidate, this, section_id),
+			// validate: this.infvalidate, //L.bind(this.infvalidate, this, section_id),
+			disabled: (this.readonly != null) ? this.readonly : this.map.readonly
+		});
+
+		if(cfgvalue){
+			// fill the widgets with config data
+			var [tlv, ins] = chompIfAddOrReplace(cfgvalue.trim().toLowerCase());
+			const tlvparts = tlv.split(' ');
+
+			if(tlvparts[0] == 'oui' && tlvparts[2] == 'subtype') {
+				widgetINS.value = ins;
+				widgetINS.render();
+				widgetINS.node.childNodes[0].childNodes.forEach(function(c, v){
+					// select the entry that matches cfgvalue
+					c.selected = (c.textContent === ins);
+				});
+
+				widgetOUI.value = tlvparts[1];
+				widgetTYP.value = tlvparts[3];
+				widgetTYP.render();
+
+				// sub type is base 10 decimal
+				const i = parseInt(tlvparts[3], 10);
+
+				// if we got a large hex value > ff, we wont have it in our list
+				if(widgetTYP.node.childNodes[0].childNodes[i]){
+					widgetTYP.node.childNodes[0].childNodes[i].selected = true;
+				}				
+
+				// set optional oui-info content if there was any in cfgvalue
+				widgetINF.value = tlvparts[5] ? tlvparts[5]: '';
+			}
+		} else {
+			// if there was no config data (i.e. just instantiated a new widget or clicked add), just render.
+			widgetINS.render();
+			widgetTYP.render();
+		}
+
+		var table = E('table', { 'class': 'table' }, [
+			E('tr', { 'class': 'tr' }, [
+				E('th', { 'class': 'th' }, [ _('Insert') ]),
+				E('th', { 'class': 'th' }, [ _('OUI') ]),
+				E('th', { 'class': 'th' }, [ _('SubType') ]),
+				E('th', { 'class': 'th' }, [ _('Content') ])
+			]),
+			E('tr', { 'class': 'tr' }, [
+				E('td', { 'class': 'td' }, [ widgetINS.node ]),
+				E('td', { 'class': 'td' }, [ widgetOUI.render() ]),
+				E('td', { 'class': 'td' }, [ widgetTYP.node ]),
+				E('td', { 'class': 'td' }, [ widgetINF.render() ])
+			])
+		]);
+
+		return table;
+	},
+
+	formvalue: function(section_id) {
+		var node = this.map.findElement('data-field', this.cbid(section_id)),
+			data = null;
+
+		var inputs02 = node.querySelectorAll('select.cbi-input-select')
+		var inputs13 = node.querySelectorAll('input.cbi-input-text')
+
+		//[add | replace] oui OUI subtype SUBTYPE [oui-info content]
+
+		if(inputs13[0].value) {
+			data = inputs02[0].options[inputs02[0].value].text;
+			// If insert behaviour was 'default' (empty): set it back to empty:
+			data = data === 'default' ? '': data;
+			data += ' oui ';
+			data += inputs13[0].value;
+			data += ' subtype ';
+			//subtype is decimal:
+			data += inputs02[1].value;
+			data += inputs13[1].value ? ' oui-info ' + inputs13[1].value: '';
+			data = data.trim();
+		}
+
+		return data;
+	},
+
+	write: function(section_id, value) {
+		if (value){
+			uci.unset(this.config, section_id, value);
+
+			// console.log('write:', this.config, section_id, value);
+			uci.set(this.config, section_id, value);
+		}
+	}
+});
 
 const validateioentries = function(section_id, value) {
 	if (value) {
@@ -573,6 +763,68 @@ return L.view.extend({
 		o.depends('enable_sonmp', '1');
 	},
 
+	// -----------------------------------------------------------------------------------------
+	//
+	//   Custom TLV
+	//
+	// -----------------------------------------------------------------------------------------
+
+	/** @private */
+	populateCustomTLVOptions: function(s, tab, data) {
+		var o, m, s, ss, so, oo;
+
+		m = new form.Map(data, _('Custom TLVs'));
+
+		o = s.taboption(tab, form.SectionValue, '_tlv_', form.TableSection, 'custom-tlv', _('Custom TLV'));
+		ss = o.subsection;
+		ss.anonymous = true;
+		ss.sortable = true;
+		ss.addremove = true;
+		ss.rowcolors = true;
+
+		oo = ss.option(lldpd.CBIMultiIOSelect, 'ports',
+			_('Network Ports'));
+		data[3].forEach(nd => {
+			oo.value(nd.getName());
+			oo.value('!'+nd.getName());
+		});
+		oo.validate = validateiofunc;
+		// These cfgvalue loads are needed if we must customize for ',' splits. Mandated by lldpd.init handling.
+		// oo.cfgvalue = function(section_id) {
+		// 	const value = this.super('load', [section_id]) || null;
+		// 	if(!value) return '';
+		// 	return String(value).split(',');
+		// };
+		// oo.write = function(section_id, value, sep) {
+		// 	return this.super('write', [ section_id, value.join(',') ]);
+		// }
+
+		oo = ss.option(cbiCustomTLV, 'lldp_custom_tlv',
+			_('TLV'));
+
+		oo.insplaceholder = 'insert behaviour';
+
+		oo.insvalidate = function(){return true};
+		oo.ouivalidate = function(section_id, value) {
+			if (!value.match(/^[a-f0-9][a-f0-9](,[a-f0-9][a-f0-9]){2}$/i))
+				return hexCSVstring;
+			return true;
+		};
+		oo.ouirmempty = false;
+
+		oo.infvalidate = function(section_id, value) {
+			if (!value) return true;
+			if (!value.match(/^[a-f0-9][a-f0-9](,[a-f0-9][a-f0-9]){0,}$/i))
+				return hexCSVstring;
+			return true;
+		};
+		oo.infrmempty = true;
+		oo.write = function(section_id, value) {
+			uci.set(this.config, section_id, this.option, value);
+		}
+
+	},
+
 	/** @private */
 	populateOptions: function(s, data) {
 		var o;
@@ -588,6 +840,9 @@ return L.view.extend({
 
 		s.tab('protocols', _('Protocols Support'));
 		this.populateProtocolsOptions(s, 'protocols', data);
+
+		s.tab('customtlv', _('Custom TLV'));
+		this.populateCustomTLVOptions(s, 'customtlv', data);
 	},
 
 	render: function(data) {
