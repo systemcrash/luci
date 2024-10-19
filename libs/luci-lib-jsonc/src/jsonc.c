@@ -162,12 +162,17 @@ static void _json_to_lua(lua_State *L, struct json_object *obj)
 	int64_t v;
 	int n;
 
+	if (!lua_checkstack(L, 1))  // Ensure there's space on the Lua stack
+		return;
+
 	switch (json_object_get_type(obj))
 	{
 	case json_type_object:
 		lua_newtable(L);
 		json_object_object_foreach(obj, key, val)
 		{
+			if (!lua_checkstack(L, 2))  // Ensure space for key-value pair
+				return;
 			_json_to_lua(L, val);
 			lua_setfield(L, -2, key);
 		}
@@ -177,6 +182,8 @@ static void _json_to_lua(lua_State *L, struct json_object *obj)
 		lua_newtable(L);
 		for (n = 0; n < json_object_array_length(obj); n++)
 		{
+			if (!lua_checkstack(L, 1))  // Ensure space for array element
+				return;
 			_json_to_lua(L, json_object_array_get_idx(obj, n));
 			lua_rawseti(L, -2, n + 1);
 		}
@@ -189,7 +196,7 @@ static void _json_to_lua(lua_State *L, struct json_object *obj)
 	case json_type_int:
 		v = json_object_get_int64(obj);
 		if (sizeof(lua_Integer) > sizeof(int32_t) ||
-		    (v >= INT32_MIN && v <= INT32_MAX))
+			(v >= INT32_MIN && v <= INT32_MAX))
 			lua_pushinteger(L, (lua_Integer)v);
 		else
 			lua_pushnumber(L, (lua_Number)v);
