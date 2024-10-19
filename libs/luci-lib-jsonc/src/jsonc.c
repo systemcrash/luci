@@ -131,8 +131,15 @@ static int json_parse_chunk(lua_State *L)
 	struct json_state *s = luaL_checkudata(L, 1, LUCI_JSONC_PARSER);
 	const char *chunk = luaL_checklstring(L, 2, &len);
 
+	if (!s->tok)  // Check for NULL token
+	{
+		lua_pushnil(L);
+		lua_pushstring(L, "JSON tokener is NULL");
+		return 2;
+	}
+
 	s->obj = json_tokener_parse_ex(s->tok, chunk, len);
-    s->err = json_tokener_get_error(s->tok);
+	s->err = json_tokener_get_error(s->tok);
 
 	if (!s->err)
 	{
