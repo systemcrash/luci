@@ -50,13 +50,19 @@ static int json_new(lua_State *L)
 	struct json_tokener *tok = json_tokener_new();
 
 	if (!tok)
+	{
+		lua_pushnil(L);
+		lua_pushstring(L, "Failed to create JSON tokener");
 		return 0;
+	}
 
 	s = lua_newuserdata(L, sizeof(*s));
 
 	if (!s)
 	{
 		json_tokener_free(tok);
+		lua_pushnil(L);
+		lua_pushstring(L, "Memory allocation for JSON tokener failed");
 		return 0;
 	}
 
