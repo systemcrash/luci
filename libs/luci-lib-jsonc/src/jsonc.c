@@ -288,9 +288,9 @@ static bool visited(struct seen **sp, const void *ptr) {
 	if (s->len >= s->size)
 	{
 		i = s->size + 10;
-		s = realloc(*sp, sizeof(struct seen) + sizeof(void *) * i);
+		struct seen *tmp = realloc(*sp, sizeof(struct seen) + sizeof(void *) * i);
 
-		if (!s)
+		if (!tmp)  // realloc failed
 		{
 			if (*sp)
 				free(*sp);
@@ -299,6 +299,7 @@ static bool visited(struct seen **sp, const void *ptr) {
 			return true;
 		}
 
+		s = tmp;  // Only update `s` if realloc succeeds
 		s->size = i;
 		*sp = s;
 	}
