@@ -5,14 +5,16 @@ use Getopt::Long;
 # Default value for msgmerge flag --add-location=
 my $add_location = "full";
 # my $add_location = "never";
+my $update = 1; # Default to true
 
 # Parse command-line options
 # ln = line-numbering.
 GetOptions(
     "ln=s" => \$add_location,
-) or die "Usage: $0 [--ln=<never|file|full>] [<po directory>] [<file pattern>]\n";
+    "update!" => \$update,
+) or die "Usage: $0 [--ln=<never|file|full>] [--(no-)update] [<po directory>] [<file pattern>]\n";
 
-@ARGV <= 2 or die "Usage: $0 [--ln=<never|file|full>] [<po directory>] [<file pattern>]\n";
+@ARGV <= 2 or die "Usage: $0 [--ln=<never|file|full>] [--(no-)update] [<po directory>] [<file pattern>]\n";
 
 my $source  = shift @ARGV;
 my $pattern = shift @ARGV || '*.po';
@@ -111,7 +113,12 @@ foreach my $dir (@dirs)
 
 				printf "Updating %-40s", $file;
 				# --add-location=never omits '#file: <line-number>' lines which are not useful for our purposes.
-				system("msgmerge", "-U", "-N", "--add-location=$add_location", $file, "$dir/templates/$basename.pot");
+				if( $update ) {
+					system("msgmerge", "-U", "-N", "--add-location=$add_location", $file, "$dir/templates/$basename.pot", );
+				}
+				else {
+					system("msgmerge", "-o", $file, "-N", "--add-location=$add_location", $file, "$dir/templates/$basename.pot", );
+				}
 
 				write_header($file, $head);
 			}

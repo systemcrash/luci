@@ -2,7 +2,7 @@
 
 print_help() {	
 	echo "Execute as ./build/i18n-sync.sh [-b]" >&2
-	echo "Or run as: ./build/i18n-sync.sh [-b] [--ln=<never|file|full>] [module folder e.g. applications/luci-app-example]" >&2
+	echo "Or run as: ./build/i18n-sync.sh [-b] [--ln=<never|file|full>] [--(no-)update] [module folder e.g. applications/luci-app-example]" >&2
 	echo "Options:"
 	echo "	-b: Generate the base .pot file ( invokes ./build/mkbasepot.sh )"
 }
@@ -11,6 +11,9 @@ print_help() {
 	print_help
 	exit 1
 }
+
+# [--(no-)update]
+# [--update] sends the -U (in-place update) flag to msgmerge. [--no-update] uses -o to output instead.
 
 # If you need to set a new default for [--ln=<never|file|full>], set it here:
 line_numbers="--ln=full"
@@ -24,6 +27,14 @@ for arg in "$@"; do
 			;;
 		--ln=* )
 			line_numbers="$arg"
+			shift
+			;;
+		--update )
+			update_mode="$arg"
+			shift
+			;;
+		--no-update )
+			update_mode="$arg"
 			shift
 			;;
 		--ln )
@@ -72,13 +83,13 @@ if [ -n "$1" ]; then
 			xargs -r -n 1 dirname | \
 			xargs -r -n 1 dirname | sort | \
 			# Note: do not quote ${parameters}
-			xargs -r -n 1 -P 40 ./build/i18n-update.pl ${line_numbers}
+			xargs -r -n 1 -P 40 ./build/i18n-update.pl ${line_numbers} ${update_mode}
 	elif [ "$(uname)" = "Linux" ]; then
 		# Linux-specific commands
 		find "$1" -path '*/templates/*.pot' -printf '%h ' | \
 			xargs -r -n 1 dirname | \
 			# Note: do not quote ${parameters}
-			xargs -r -n 1 -P 40 ./build/i18n-update.pl ${line_numbers}
+			xargs -r -n 1 -P 40 ./build/i18n-update.pl ${line_numbers} ${update_mode}
 	# elif [ "$(uname)" = "SunOS" ]; then
 	# 	# Solaris-specific commands
 	else
@@ -86,7 +97,7 @@ if [ -n "$1" ]; then
 		find "$1" -path '*/templates/*.pot' -printf '%h ' | \
 			xargs -r -n 1 dirname | \
 			# Note: do not quote ${parameters}
-			xargs -r -n 1 -P 40 ./build/i18n-update.pl ${line_numbers}
+			xargs -r -n 1 -P 40 ./build/i18n-update.pl ${line_numbers} ${update_mode}
 	fi
 else
 	# this performs operations on all .po files
