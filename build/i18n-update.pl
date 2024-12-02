@@ -56,7 +56,33 @@ if( ! $source )
 }
 else
 {
-	@dirs = ( $source );
+    my $current_path = $source;
+    my @po_dirs;
+
+    $current_path =~ s{/$}{};
+
+    while ($current_path) {
+        my $glob_pattern = (-d "$current_path/po") 
+            ? "$current_path/po*" 
+            : "$current_path/*/po";
+
+        @po_dirs = glob($glob_pattern); # Look for /po
+        last if @po_dirs; # Stop if we find any /po
+
+        # Step up one directory
+        if ($current_path !~ m{/}) {
+            # If no slashes, we've reached the top level
+            $current_path = "";
+        } else {
+            # Remove the last directory component
+            $current_path =~ s{/[^/]+$}{};
+        }
+    }
+
+    die "Error: Could not find any 'po' directories starting from '$source'.\n" unless @po_dirs;
+
+    # Set @dirs to the found /po directories
+    @dirs = @po_dirs;
 }
 
 foreach my $dir (@dirs)
