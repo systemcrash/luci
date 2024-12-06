@@ -10,11 +10,8 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 5.8-dev\n"
 
-#: applications/luci-app-filebrowser/htdocs/luci-static/resources/view/system/filebrowser.js:16
-#: applications/luci-app-filebrowser/root/usr/share/luci/menu.d/luci-app-filebrowser.json:3
 msgid "File Browser"
 msgstr "ファイル ブラウザー"
 
-#: applications/luci-app-filebrowser/root/usr/share/rpcd/acl.d/luci-app-filebrowser.json:3
 msgid "Grant access to File Browser"
 msgstr ""

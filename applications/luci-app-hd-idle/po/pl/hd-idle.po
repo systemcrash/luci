@@ -15,36 +15,27 @@ msgstr ""
 "|| n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 5.2-dev\n"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:43
 msgid "Add new hdd setting..."
 msgstr "Dodaj nowe ustawienie HDD..."
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:61
 msgid "Bus"
 msgstr "Magistrala"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:53
 msgid "Disk"
 msgstr "Dysk"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:46
 msgid "Disk Settings"
 msgstr "Ustawienia dysku"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:49
 msgid "Enable"
 msgstr "Włącz"
 
-#: applications/luci-app-hd-idle/root/usr/share/rpcd/acl.d/luci-app-hd-idle.json:3
 msgid "Grant UCI access for luci-app-hd-idle"
 msgstr "Przyznaj luci-app-hd-idle dostęp do UCI"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:37
-#: applications/luci-app-hd-idle/root/usr/share/luci/menu.d/luci-app-hd-idle.json:3
 msgid "HDD Idle"
 msgstr "HDD Idle"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:37
 msgid ""
 "HDD Idle is a utility program for spinning-down disks after a period of idle "
 "time."
@@ -52,39 +43,30 @@ msgstr ""
 "HDD Idle jest narzędziem do zwalniania obrotów dysków po określonym czasie "
 "bezczynności."
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:75
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:87
 msgid "Idle time"
 msgstr "Czas bezczynności"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:79
 msgid "Idle time unit"
 msgstr "Jednostka czasu bezczynności"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:39
 msgid "Settings"
 msgstr "Ustawienia"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:68
 msgid "Vendor / Model"
 msgstr "Dostawca / Model"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:84
 msgctxt "Abbreviation for days"
 msgid "days"
 msgstr "dni"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:83
 msgctxt "Abbreviation for hours"
 msgid "hours"
 msgstr "godziny"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:82
 msgctxt "Abbreviation for minutes"
 msgid "minutes"
 msgstr "minuty"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:81
 msgctxt "Abbreviation for seconds"
 msgid "seconds"
 msgstr "sekundy"

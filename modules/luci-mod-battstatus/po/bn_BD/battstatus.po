@@ -12,14 +12,11 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 4.9-dev\n"
 
-#: modules/luci-mod-battstatus/htdocs/luci-static/resources/preload/battstatus.js:26
 msgid "Charging"
 msgstr "চার্জ হচ্ছে"
 
-#: modules/luci-mod-battstatus/root/usr/share/rpcd/acl.d/luci-mod-battstatus.json:3
 msgid "Grant access to battery status"
 msgstr "ব্যাটারি স্ট্যাটাসে অ্যাক্সেস মঞ্জুর করুন"
 
-#: modules/luci-mod-battstatus/htdocs/luci-static/resources/preload/battstatus.js:26
 msgid "Not Charging"
 msgstr "চার্জ হচ্ছে না"

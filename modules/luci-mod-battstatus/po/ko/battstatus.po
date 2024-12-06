@@ -12,14 +12,11 @@ msgstr ""
 "Plural-Forms: nplurals=1; plural=0;\n"
 "X-Generator: Weblate 4.14-dev\n"
 
-#: modules/luci-mod-battstatus/htdocs/luci-static/resources/preload/battstatus.js:26
 msgid "Charging"
 msgstr "충전 중"
 
-#: modules/luci-mod-battstatus/root/usr/share/rpcd/acl.d/luci-mod-battstatus.json:3
 msgid "Grant access to battery status"
 msgstr "배터리 상태 확인을 위한 권한 허용"
 
-#: modules/luci-mod-battstatus/htdocs/luci-static/resources/preload/battstatus.js:26
 msgid "Not Charging"
 msgstr "충전하지 않음"

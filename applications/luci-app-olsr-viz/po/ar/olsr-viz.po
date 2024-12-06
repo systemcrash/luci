@@ -11,11 +11,9 @@ msgstr ""
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
 "X-Generator: Weblate 5.7-dev\n"
 
-#: applications/luci-app-olsr-viz/root/usr/share/rpcd/acl.d/luci-app-olsr-viz-unauthenticated.json:3
 msgid "Grant read access for luci-app-olsr-viz"
 msgstr "منح حق الوصول للقراءة لـ luci - app - olsr - viz"
 
-#: applications/luci-app-olsr-viz/root/usr/share/luci/menu.d/luci-app-olsr-viz.json:4
 msgid "OLSR Visualization"
 msgstr "تصور OLSR"
 

@@ -11,36 +11,27 @@ msgstr ""
 "n>6 && n<11) ? 3 : 4;\n"
 "X-Generator: Weblate 5.8-dev\n"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:43
 msgid "Add new hdd setting..."
 msgstr "Cuir socrú nua hdd leis..."
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:61
 msgid "Bus"
 msgstr "Bus"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:53
 msgid "Disk"
 msgstr "Diosca"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:46
 msgid "Disk Settings"
 msgstr "Socruithe Diosca"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:49
 msgid "Enable"
 msgstr "Cumasaigh"
 
-#: applications/luci-app-hd-idle/root/usr/share/rpcd/acl.d/luci-app-hd-idle.json:3
 msgid "Grant UCI access for luci-app-hd-idle"
 msgstr "Deonaigh rochtain UCI do luci-app-hd-idle"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:37
-#: applications/luci-app-hd-idle/root/usr/share/luci/menu.d/luci-app-hd-idle.json:3
 msgid "HDD Idle"
 msgstr "HDD Díomhaoin"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:37
 msgid ""
 "HDD Idle is a utility program for spinning-down disks after a period of idle "
 "time."
@@ -48,39 +39,30 @@ msgstr ""
 "Is clár fóntais é HDD Idle le haghaidh dioscaí sníomh síos tar éis tréimhse "
 "díomhaoin."
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:75
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:87
 msgid "Idle time"
 msgstr "Am díomhaoin"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:79
 msgid "Idle time unit"
 msgstr "Aonad ama díomhaoin"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:39
 msgid "Settings"
 msgstr "Socruithe"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:68
 msgid "Vendor / Model"
 msgstr "Díoltóir / Múnla"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:84
 msgctxt "Abbreviation for days"
 msgid "days"
 msgstr "laethanta"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:83
 msgctxt "Abbreviation for hours"
 msgid "hours"
 msgstr "huaireanta"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:82
 msgctxt "Abbreviation for minutes"
 msgid "minutes"
 msgstr "nóiméaid"
 
-#: applications/luci-app-hd-idle/htdocs/luci-static/resources/view/hd_idle.js:81
 msgctxt "Abbreviation for seconds"
 msgid "seconds"
 msgstr "soicindí"

@@ -10,11 +10,9 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 5.7.1-dev\n"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:41
 msgid "Allowed IP ranges"
 msgstr "Tillåtna IP-räckvidder"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:26
 msgid ""
 "Attempt to automatically detect if the upstream IP will be blocked by the "
 "configuration, and add an exception if it will. If this does not work "
@@ -24,41 +22,31 @@ msgstr ""
 "konfigurationen och lägga till ett undantag om den gör så. Om det inte "
 "fungerar korrekt så kan du lägga till undantag manuellt nedan."
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:25
 msgid "Auto-detect upstream IP"
 msgstr "Upptäck automatiskt IP från uppströms"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:10
-#: applications/luci-app-bcp38/root/usr/share/luci/menu.d/luci-app-bcp38.json:3
 msgid "BCP38"
 msgstr "BCP38"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:18
 msgid "BCP38 config"
 msgstr "BCP38-konfiguration"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:38
 msgid "Blocked IP ranges"
 msgstr "Blockerad IP-räckvidd"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:21
 msgid "Enable"
 msgstr "Aktivera"
 
-#: applications/luci-app-bcp38/root/usr/share/rpcd/acl.d/luci-app-bcp38.json:3
 msgid "Grant UCI access for luci-app-bcp38"
 msgstr "Godkänn UCI-åtkomst för luci-app-bcp38"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:31
 msgid "Interface name"
 msgstr "Namn på gränssnittet"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:32
 msgid ""
 "Interface to apply the blocking to should be the upstream WAN interface)."
 msgstr ""
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:42
 msgid ""
 "Takes precedence over blocked ranges. Use to whitelist your upstream network "
 "if you're behind a double NAT and the auto-detection doesn't work."
@@ -67,7 +55,6 @@ msgstr ""
 "nätverk uppströms om du står bakom en dubbel-NAT och om den automatiska "
 "upptäckten inte fungerar."
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:11
 msgid ""
 "This function blocks packets with private address destinations from going "
 "out onto the internet as per <a href=\"http://tools.ietf.org/html/"

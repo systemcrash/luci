@@ -11,11 +11,9 @@ msgstr ""
 "n>6 && n<11) ? 3 : 4;\n"
 "X-Generator: Weblate 5.8-dev\n"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:41
 msgid "Allowed IP ranges"
 msgstr "Raonta IP ceadaithe"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:26
 msgid ""
 "Attempt to automatically detect if the upstream IP will be blocked by the "
 "configuration, and add an exception if it will. If this does not work "
@@ -26,43 +24,33 @@ msgstr ""
 "oibríonn sé seo i gceart, is féidir leat eisceachtaí a chur leis de láimh "
 "thíos."
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:25
 msgid "Auto-detect upstream IP"
 msgstr "Auto-bhrath IP in aghaidh srutha"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:10
-#: applications/luci-app-bcp38/root/usr/share/luci/menu.d/luci-app-bcp38.json:3
 msgid "BCP38"
 msgstr "BCP38"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:18
 msgid "BCP38 config"
 msgstr "Cumraíocht BCP38"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:38
 msgid "Blocked IP ranges"
 msgstr "Raonta IP blocáilte"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:21
 msgid "Enable"
 msgstr "Cumasaigh"
 
-#: applications/luci-app-bcp38/root/usr/share/rpcd/acl.d/luci-app-bcp38.json:3
 msgid "Grant UCI access for luci-app-bcp38"
 msgstr "Deonaigh rochtain UCI do luci-app-bcp38"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:31
 msgid "Interface name"
 msgstr "Ainm an chomhéadain"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:32
 msgid ""
 "Interface to apply the blocking to should be the upstream WAN interface)."
 msgstr ""
 "Ba cheart go mbeadh an comhéadan chun an blocáil a chur i bhfeidhm mar an "
 "comhéadan WAN in aghaidh an tsrutha)."
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:42
 msgid ""
 "Takes precedence over blocked ranges. Use to whitelist your upstream network "
 "if you're behind a double NAT and the auto-detection doesn't work."
@@ -71,7 +59,6 @@ msgstr ""
 "réamhtheachtacha a liostú má tá tú taobh thiar de NAT dúbailte agus mura n-"
 "oibríonn an t-uathbhrath."
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:11
 msgid ""
 "This function blocks packets with private address destinations from going "
 "out onto the internet as per <a href=\"http://tools.ietf.org/html/"

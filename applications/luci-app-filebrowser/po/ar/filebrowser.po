@@ -11,11 +11,8 @@ msgstr ""
 "&& n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
 "X-Generator: Weblate 5.7-dev\n"
 
-#: applications/luci-app-filebrowser/htdocs/luci-static/resources/view/system/filebrowser.js:16
-#: applications/luci-app-filebrowser/root/usr/share/luci/menu.d/luci-app-filebrowser.json:3
 msgid "File Browser"
 msgstr "متصفح الملفات"
 
-#: applications/luci-app-filebrowser/root/usr/share/rpcd/acl.d/luci-app-filebrowser.json:3
 msgid "Grant access to File Browser"
 msgstr "منح حق الوصول إلى متصفح الملفات"

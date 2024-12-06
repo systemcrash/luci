@@ -11,11 +11,9 @@ msgstr ""
 "|| n%100>=20) ? 1 : 2;\n"
 "X-Generator: Weblate 5.2-dev\n"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:41
 msgid "Allowed IP ranges"
 msgstr "Dozwolone zakresy IP"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:26
 msgid ""
 "Attempt to automatically detect if the upstream IP will be blocked by the "
 "configuration, and add an exception if it will. If this does not work "
@@ -25,42 +23,32 @@ msgstr ""
 "przez konfigurację, i dodać wyjątek, jeśli tak się stanie. Jeśli to nie "
 "działa prawidłowo, można ręcznie dodać wyjątki poniżej."
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:25
 msgid "Auto-detect upstream IP"
 msgstr "Automatyczne wykrywanie nadrzędnego adresu IP"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:10
-#: applications/luci-app-bcp38/root/usr/share/luci/menu.d/luci-app-bcp38.json:3
 msgid "BCP38"
 msgstr "BCP38"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:18
 msgid "BCP38 config"
 msgstr "Konfiguracja BCP38"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:38
 msgid "Blocked IP ranges"
 msgstr "Blokowane zakresy adresów IP"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:21
 msgid "Enable"
 msgstr "Włącz"
 
-#: applications/luci-app-bcp38/root/usr/share/rpcd/acl.d/luci-app-bcp38.json:3
 msgid "Grant UCI access for luci-app-bcp38"
 msgstr "Przyznaj luci-app-bcp38 dostęp do UCI"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:31
 msgid "Interface name"
 msgstr "Nazwa interfejsu"
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:32
 msgid ""
 "Interface to apply the blocking to should be the upstream WAN interface)."
 msgstr ""
 "Interfejs do zastosowania blokowania powinien być nadrzędnym interfejsem WAN."
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:42
 msgid ""
 "Takes precedence over blocked ranges. Use to whitelist your upstream network "
 "if you're behind a double NAT and the auto-detection doesn't work."
@@ -69,7 +57,6 @@ msgstr ""
 "listę swojej nadrzędnej sieci, jeśli jesteś za podwójnym NATem i "
 "automatyczne wykrywanie nie działa."
 
-#: applications/luci-app-bcp38/htdocs/luci-static/resources/view/bcp38/form.js:11
 msgid ""
 "This function blocks packets with private address destinations from going "
 "out onto the internet as per <a href=\"http://tools.ietf.org/html/"
