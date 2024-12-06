@@ -11,8 +11,8 @@ $ENV{'LC_ALL'} = 'C';
 POSIX::setlocale(POSIX::LC_ALL, 'C');
 
 # Default value for msgmerge flag --add-location=
-my $add_location = "full";
-# my $add_location = "never";
+# my $add_location = "full";
+my $add_location = "never";
 
 
 # Parse command-line options

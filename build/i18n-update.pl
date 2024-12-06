@@ -3,8 +3,8 @@
 use Getopt::Long;
 
 # Default value for msgmerge flag --add-location=
-my $add_location = "full";
-# my $add_location = "never";
+# my $add_location = "full";
+my $add_location = "never";
 my $update = 1; # Default to true
 
 # Parse command-line options

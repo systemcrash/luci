@@ -16,8 +16,8 @@ print_help() {
 # [--update] sends the -U (in-place update) flag to msgmerge. [--no-update] uses -o to output instead.
 
 # If you need to set a new default for [--ln=<never|file|full>], set it here:
-line_numbers="--ln=full"
-# line_numbers="--ln=never"
+# line_numbers="--ln=full"
+line_numbers="--ln=never"
 
 for arg in "$@"; do
 	case $arg in
