@@ -1,0 +1,93 @@
+name: i18n Sync Check
+
+on:
+  # push:
+  #   branches: [ "master" ]
+  #   paths:
+  #     - '**/*.pot?'
+  #     - '**/*.js'
+  #     - '**/menu.d/*.json'
+  #     - '**/acl.d/*.json'
+  #     - '**/*.ut'
+  #     - '**/*.uc'
+  #     - '**/*.lua'
+  #     - '**/*.html?'
+
+  pull_request:
+    branches: [ "master" ]
+    paths:
+      - '**/*.pot?'
+      - '**/*.js'
+      - '**/menu.d/*.json'
+      - '**/acl.d/*.json'
+      - '**/*.ut'
+      - '**/*.uc'
+      - '**/*.lua'
+      - '**/*.html?'
+
+jobs:
+  i18n_check:
+    runs-on: ubuntu-latest
+    # Initial tests show the following steps complete in 30-40 seconds, with good GitHub weather
+    timeout-minutes: ${{ 15 }}
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for all branches and tags
+
+      - name: Install gettext utilities
+        run: sudo apt-get install -y gettext
+
+      # Run i18n scripts
+      # ${{ github.event.pull_request.base.sha }} <-- PR target
+      # ${{ github.sha }}  <-- this PR commit tip
+      - name: Run i18n sync runner
+        run: |
+          ./build/github_i18n_sync_runner.sh ${{ github.sha }} ${{ github.event.pull_request.base.sha }}
+
+      # msgmerge -V
+      # msguniq -V
+      # git status --porcelain | grep '^ M ' 
+      # Look for ' M somefile' modified flag in git output
+      - name: Results
+        run: |
+          git status --porcelain
+          git diff
+          git status --porcelain | grep -q '^ M ' && echo "::error::Unsynchronized changes detected!" && exit 1 || echo "i18n is up-to-date." && exit 0
+
+      # available status for if conditions: success(), failure(), always(), cancelled()
+      - name: Comment on failure
+        if: ${{ failure() }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const runId = context.runId;
+            const runUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${runId}`;
+            const link = `👉 [View the Workflow Logs](${runUrl})\n`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Hello. It seems i18n-sync found differences between your PR and the master branch.🫤\n' +
+              'This usually means you (or someone else) have not refreshed language strings for a commit.\n' +
+              'Suggested fix:\n' +
+              ' - `git pull --ff-only`\n' +
+              ' - `git rebase master`\n' +
+              '\n' +
+              'Resolve any conflicts, then\n' +
+              ' - `./build/i18n-sync.sh applications/luci-app-your-changed-app`\n' +
+              ' - `git add *`\n' +
+              ' - `git commit --amend`\n' +
+              '\n' +
+              'Push your changes\n' +
+              ' - `git push --force`' +
+              '\n\n' +
+              'This might not be your fault and may just require an update from a maintainer. Please check the results from the *i18n Sync Check* workflow.\n' +
+              link +
+              'See also the [i18n document](https://github.com/openwrt/luci/blob/master/docs/i18n.md)\n'
+            })
+
