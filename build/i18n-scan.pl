@@ -5,12 +5,23 @@ use warnings;
 use IPC::Open2;
 use POSIX;
 use Text::Balanced qw(gen_extract_tagged);
+use Getopt::Long;
 
 $ENV{'LC_ALL'} = 'C';
 POSIX::setlocale(POSIX::LC_ALL, 'C');
 
-@ARGV >= 1 || die "Usage: $0 <source directory>\n";
+# Default value for msgmerge flag --add-location=
+my $add_location = "full";
+# my $add_location = "never";
 
+
+# Parse command-line options
+# ln == line-numbering == msgmerge --add-location
+GetOptions(
+    "ln=s" => \$add_location,
+) or die "Usage: $0 [--ln=<never|file|full>] <source directory>\n";
+
+@ARGV >= 1 || die "Usage: $0 [--ln=<never|file|full>] <source directory>\n";
 
 my %keywords = (
 	'.js' => [ '_:1', '_:1,2c', 'N_:2,3', 'N_:2,3,4c' ],
@@ -65,6 +76,7 @@ sub postprocess_pot($$) {
 	my @lines = split /\n/, $source;
 
 	# Remove all header lines up to the first location comment
+	# Note: this may be greedy and eat the whole file lacking location comments
 	while (@lines > 0 && $lines[0] !~ m!^#: !) {
 		shift @lines;
 	}
@@ -104,6 +116,11 @@ sub postprocess_pot($$) {
 
 		# Ignore any flags added by xgettext
 		elsif ($line =~ m!^#, !) {
+			next;
+		}
+
+		# omit #: file:<line-number> comments
+		elsif ($line =~ m!^#: ! && $add_location eq 'never') {
 			next;
 		}
 
