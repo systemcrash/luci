@@ -1,0 +1,30 @@
+name: APK Version numbering
+
+on:
+  pull_request:
+    branches: [ "master" ]
+    paths:
+      - '**/Makefile'
+
+jobs:
+  build:
+    name: APK Version numbering
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      # Perform two grep checks. The first confirms the 'PKG_VERSION:=' line
+      # exists. The second ensures that the version number found on it complies.
+      - name: Check APK Version Numbers
+        run: |
+          if ! grep -qr '^PKG_VERSION:=' --include="Makefile" && ! grep -qrE '^PKG_VERSION:=[0-9]+(?:\.[0-9]+(?:\.[0-9]+(?:\.[0-9]+)?)?)?$' --include="Makefile" ; then
+            echo "Error: Invalid APK version numbers found" >&2
+            exit 1
+          fi
+

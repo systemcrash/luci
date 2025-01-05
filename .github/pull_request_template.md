@@ -29,7 +29,7 @@ MAY:
 - [ ] This PR is not from my *main* or *master* branch :poop:, but a *separate* branch :white_check_mark:
 - [ ] Each commit has a valid :black_nib: `Signed-off-by: <my@email.address>` row (via `git commit --signoff`)
 - [ ] Each commit and PR title has a valid :memo: `<package name>: title` first line subject for packages
-- [ ] Incremented :up: any `PKG_VERSION` in the Makefile
+- [ ] Incremented :up: any `PKG_VERSION` in the Makefile (ensure it complies with APK `<major>.<minor>.<fixup>[.<sub1>...]`)
 - [ ] Tested on: (architecture, openwrt version, browser) :white_check_mark:
 - [ ] \( Preferred ) Mention: @ the original code author for feedback
 - [ ] \( Preferred ) Screenshot or mp4 of changes:
