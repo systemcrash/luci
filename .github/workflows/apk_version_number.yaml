@@ -17,7 +17,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
+          sparse-checkout: |
+            **/Makefile
+          sparse-checkout-cone-mode: false
 
       # Perform two grep checks. The first confirms the 'PKG_VERSION:=' line
       # exists. The second ensures that the version number found on it complies.
