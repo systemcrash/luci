@@ -1324,6 +1324,12 @@ return view.extend({
 					return v;
 				};
 
+				/* The 6GHz band shall use WPA3 or OWE only (Wifi 6E, 7).
+				   Some radio firmwares mandate this and won't start with older WPA.
+				 */
+				const radio = uci.get('wireless', s.section, 'device');
+				const band = uci.get('wireless', radio, 'band');
+				const twoOrFiveGBand = (band == "2g" || band == "5g");
 
 				var crypto_modes = [];
 
@@ -1352,37 +1358,37 @@ return view.extend({
 					    has_sta_wep = L.hasSystemFeature('wpasupplicant', 'wep');
 
 					if (has_hostapd || has_supplicant) {
-						crypto_modes.push(['psk2',      'WPA2-PSK',                    35]);
-						crypto_modes.push(['psk-mixed', 'WPA-PSK/WPA2-PSK Mixed Mode', 22]);
-						crypto_modes.push(['psk',       'WPA-PSK',                     12]);
+						crypto_modes.push(['psk2',      'WPA2-PSK',                    35, 'pre6esec']);
+						crypto_modes.push(['psk-mixed', 'WPA-PSK/WPA2-PSK Mixed Mode', 22, 'pre6esec']);
+						crypto_modes.push(['psk',       'WPA-PSK',                     12, 'pre6esec']);
 					}
 					else {
 						encr.description = _('WPA-Encryption requires wpa_supplicant (for client mode) or hostapd (for AP and ad-hoc mode) to be installed.');
 					}
 
 					if (has_ap_sae || has_sta_sae) {
-						crypto_modes.push(['sae',       'WPA3-SAE',                     31]);
-						crypto_modes.push(['sae-mixed', 'WPA2-PSK/WPA3-SAE Mixed Mode', 30]);
+						crypto_modes.push(['sae',       'WPA3-SAE',                     31, '6esec']);
+						crypto_modes.push(['sae-mixed', 'WPA2-PSK/WPA3-SAE Mixed Mode', 30, 'pre6esec']);
 					}
 
 					if (has_ap_wep || has_sta_wep) {
-						crypto_modes.push(['wep-open',   _('WEP Open System'), 11]);
-						crypto_modes.push(['wep-shared', _('WEP Shared Key'),  10]);
+						crypto_modes.push(['wep-open',   _('WEP Open System'), 11, 'pre6esec']);
+						crypto_modes.push(['wep-shared', _('WEP Shared Key'),  10, 'pre6esec']);
 					}
 
 					if (has_ap_eap || has_sta_eap) {
 						if (has_ap_eap192 || has_sta_eap192) {
-							crypto_modes.push(['wpa3', 'WPA3-EAP', 33]);
-							crypto_modes.push(['wpa3-mixed', 'WPA2-EAP/WPA3-EAP Mixed Mode', 32]);
-							crypto_modes.push(['wpa3-192', 'WPA3-EAP 192-bit Mode', 36]);
+							crypto_modes.push(['wpa3', 'WPA3-EAP', 33, '6esec']);
+							crypto_modes.push(['wpa3-mixed', 'WPA2-EAP/WPA3-EAP Mixed Mode', 32, 'pre6esec']);
+							crypto_modes.push(['wpa3-192', 'WPA3-EAP 192-bit Mode', 36, '6esec']);
 						}
 
-						crypto_modes.push(['wpa2', 'WPA2-EAP', 34]);
-						crypto_modes.push(['wpa',  'WPA-EAP',  20]);
+						crypto_modes.push(['wpa2', 'WPA2-EAP', 34, 'pre6esec']);
+						crypto_modes.push(['wpa',  'WPA-EAP',  20, 'pre6esec']);
 					}
 
 					if (has_ap_owe || has_sta_owe) {
-						crypto_modes.push(['owe', 'OWE', 1]);
+						crypto_modes.push(['owe', 'OWE', 1, '6esec']);
 					}
 
 					encr.crypto_support = {
@@ -1455,14 +1461,14 @@ return view.extend({
 					};
 				}
 				else if (hwtype == 'broadcom') {
-					crypto_modes.push(['psk2',     'WPA2-PSK',                    33]);
-					crypto_modes.push(['psk+psk2', 'WPA-PSK/WPA2-PSK Mixed Mode', 22]);
-					crypto_modes.push(['psk',      'WPA-PSK',                     12]);
-					crypto_modes.push(['wep-open',   _('WEP Open System'),        11]);
-					crypto_modes.push(['wep-shared', _('WEP Shared Key'),         10]);
+					crypto_modes.push(['psk2',     'WPA2-PSK',                    33, 'pre6esec']);
+					crypto_modes.push(['psk+psk2', 'WPA-PSK/WPA2-PSK Mixed Mode', 22, 'pre6esec']);
+					crypto_modes.push(['psk',      'WPA-PSK',                     12, 'pre6esec']);
+					crypto_modes.push(['wep-open',   _('WEP Open System'),        11, 'pre6esec']);
+					crypto_modes.push(['wep-shared', _('WEP Shared Key'),         10, 'pre6esec']);
 				}
 
-				crypto_modes.push(['none',       _('No Encryption'),   0]);
+				crypto_modes.push(['none',       _('No Encryption'),   0, 'pre6esec']);
 
 				crypto_modes.sort(function(a, b) { return b[2] - a[2] });
 
@@ -1470,8 +1476,10 @@ return view.extend({
 					var security_level = (crypto_modes[i][2] >= 30) ? _('strong security')
 						: (crypto_modes[i][2] >= 20) ? _('medium security')
 							: (crypto_modes[i][2] >= 10) ? _('weak security') : _('open network');
+					// add all crypto_modes for pre 6E (non 6GHz), or only permissible crypto_modes in 6GHz bands
+					if ((twoOrFiveGBand) || (!twoOrFiveGBand && crypto_modes[i][3] === '6esec'))
+						encr.value(crypto_modes[i][0], '%s (%s)'.format(crypto_modes[i][1], security_level));
 
-					encr.value(crypto_modes[i][0], '%s (%s)'.format(crypto_modes[i][1], security_level));
 				}
 
 
