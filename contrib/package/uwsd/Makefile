@@ -55,7 +55,7 @@ define Package/uwsd-mbedtls
 $(call Package/uwsd/default)
 	TITLE+= using MbedTLS
 	VARIANT:=mbedtls
-	DEPENDS+=+libmbedtls
+	DEPENDS+=+libmbedtls +px5g
 endef
 
 Package/uwsd-openssl/description:=$(Package/uwsd/description/default)

@@ -1,22 +1,153 @@
 #!/bin/sh /etc/rc.common
+# shellcheck disable=SC2034,SC2155,SC3043
 
 START=50
 
 USE_PROCD=1
 NAME=uwsd
-PROG=/usr/sbin/uwsd
+DAEMON=/usr/sbin/uwsd
+PX5G_BIN="/usr/sbin/px5g"
+OPENSSL_BIN="/usr/bin/openssl"
+CERT_PATH="/etc/uwsd/certificates"
 
-start_service() {
+generate_keys() {
+	# Lifted from uhttpd init
+	local cfg="$1"
+	local days bits country state location organization commonname key_type ec_curve
+	local hostname="$(uci_get system.@system[0].hostname)"
+
+	mkdir -p "$CERT_PATH"
+	# UWSD_KEY and UWSD_CERT are loaded in start_instance()
+	[ -f "$CERT_PATH"/"$UWSD_KEY" ] && [ -f "$CERT_PATH"/"$UWSD_CERT" ] && return 0
+
+	config_get days       "$cfg" days
+	config_get bits       "$cfg" bits
+	config_get country    "$cfg" country
+	config_get state      "$cfg" state
+	config_get location   "$cfg" location
+	config_get organization "$cfg" organization
+	config_get commonname "$cfg" commonname
+	config_get key_type   "$cfg" key_type
+	config_get ec_curve   "$cfg" ec_curve
+
+	# Prefer px5g for certificate generation (existence evaluated last)
+	local GENKEY_CMD=""
+	local KEY_OPTS="rsa:${bits:-2048}"
+	local UNIQUEID="$(dd if=/dev/urandom bs=1 count=4 | hexdump -e '1/1 "%02x"')"
+	[ "$key_type" = "ec" ] && KEY_OPTS="ec -pkeyopt ec_paramgen_curve:${ec_curve:-P-256}"
+	[ -x "$OPENSSL_BIN" ]  && GENKEY_CMD="$OPENSSL_BIN req -x509 -sha256 -outform der -nodes"
+	[ -x "$PX5G_BIN" ]     && GENKEY_CMD="$PX5G_BIN selfsigned -der"
+	# set -x
+	[ -n "$GENKEY_CMD" ] && {
+		# shellcheck disable=SC2086
+		$GENKEY_CMD \
+			-days ${days:-397} \
+			-newkey ${KEY_OPTS} \
+			-keyout "$CERT_PATH/${UWSD_KEY}.new" \
+			-out "$CERT_PATH/${UWSD_CERT}.new" \
+			-subj /C="${country:-ZZ}"/ST="${state:-Somewhere}"/L="${location:-Unknown}"/O="${organization:-OpenWrt$UNIQUEID}"/CN="${commonname:-OpenWrt}" \
+			-addext extendedKeyUsage=serverAuth \
+			-addext subjectAltName=DNS:"${commonname:-OpenWrt}" \
+			${hostname:+-addext subjectAltName=DNS:${hostname}}
+		sync
+		mv "$CERT_PATH/${UWSD_KEY}.new" "$CERT_PATH/${UWSD_KEY}"
+		mv "$CERT_PATH/${UWSD_CERT}.new" "$CERT_PATH/${UWSD_CERT}"
+	}
+	# set +x
+}
+
+
+start_instance() {
+	local cfg="$1"
+	local channels enabled tls loglevel logchannels cert key port
+	local amimbedtls amiopenssl
+
+	config_get_bool enabled "$cfg" 'enabled' 1
+	[ "$enabled" = 0 ] && return
+	config_get loglevel "$cfg" loglevel
+	config_get logchannels "$cfg" logchannels
+	config_get tls "$cfg" tls 0
+	config_get tlsvers "$cfg" tlsvers "TLSv1.2 TLSv1.3"
+	config_get port "$cfg" port 80
+	config_get UWSD_KEY  "$cfg" key  "$CERT_PATH"/uwsd.key
+	config_get UWSD_CERT "$cfg" cert "$CERT_PATH"/uwsd.crt
+
+	mkdir -p /var/etc/uwsd
+	uwsdconf="/var/etc/uwsd/http.${cfg}.conf"
+	rm -f "${uwsdconf}"
+
+	amimbedtls="$(ldd `which uwsd` | grep -q libmbedtls && echo 0)"
+	amiopenssl="$(ldd `which uwsd` | grep -q libssl && echo 0)"
+
+	# <<- trims tabs, but not ' ' spaces. tab = formatting here; space = indent in output.
+	cat >> /var/etc/uwsd/http."${cfg}".conf <<- EOCONF
+	# Base config
+	backend luci {
+	    run-script /usr/share/ucode/luci/uwsd.uc {
+	        ws-message-format json;
+	        ws-message-limit 65536;
+	    }
+	}
+
+	EOCONF
+
+	if [ "$tls" = "0" ]; then
+		cat >> /var/etc/uwsd/http."${cfg}".conf <<- EOCONF
+		# WS/HTTP
+		listen :${port:-80} {
+		    match-path /cgi-bin/ {
+		        use-backend luci;
+		    }
+
+		    serve-directory /www {
+		        index-filename index.html;
+		    }
+		}
+		EOCONF
+	elif [ "$amimbedtls" = 0 ] || [ "$amiopenssl" = 0 ]; then
+		config_foreach generate_keys cert
+		# TODO: 'ciphers' format differs depending on crypto lib
+		cat >> /var/etc/uwsd/http."${cfg}".conf <<- EOCONF
+		# WSS/HTTPS
+		listen :${port:-443} {
+		    ssl {
+		        private-key "$CERT_PATH/${UWSD_KEY}";
+		        certificate "$CERT_PATH/${UWSD_CERT}";
+		        protocols $(first=1; for x in $tlsvers; do [ $first -eq 1 ] || printf ', '; first=0; printf '%s' "$x"; done; echo);
+		        $( [ "$amiopenssl" = 0 ] && echo ciphers 'HIGH:!aNULL:!MD5'\; )
+		    }
+
+		    match-path /cgi-bin/ {
+		        use-backend luci;
+		    }
+
+		    serve-directory /www {
+		        index-filename index.html;
+		    }
+		}
+		EOCONF
+	fi
+
+	for chan in $logchannels; do
+		channels="$channels --log-channel $chan"
+	done
+
 	procd_open_instance
-	procd_set_param command "$PROG" --config /etc/uwsd/conf.d/ --log-priority warn --log-channel global --log-channel http --log-channel ws --log-channel script --log-channel ssl
+	# shellcheck disable=SC2086
+	procd_set_param command "$DAEMON" --config "${uwsdconf}" --log-priority "${loglevel:-warn}" ${channels:---log-channel global --log-channel http --log-channel ws --log-channel script --log-channel ssl}
 	procd_set_param respawn
 	procd_set_param stderr 1
 
-	for file in /etc/uwsd/conf.d/*.conf; do
-		if [ -f "$file" ]; then
-			procd_set_param file "$file"
-		fi
-	done
-
 	procd_close_instance
+}
+
+start_service() {
+	config_load "$NAME"
+	config_foreach start_instance "$NAME"
+}
+
+service_triggers()
+{
+	procd_add_reload_trigger "$NAME"
+	procd_add_raw_trigger acme.renew 5000 /etc/init.d/"$NAME" reload
 }
