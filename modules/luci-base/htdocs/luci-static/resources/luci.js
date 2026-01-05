@@ -2603,10 +2603,21 @@
 				};
 				const rpcFallbackURL = this.url('admin/ubus');
 
-				rpcBaseURL = Request.post(env.ubuspath, msg, { nobatch: true }).then(res => rpcBaseURL = res.status == 200 ? env.ubuspath : rpcFallbackURL, () => rpcBaseURL = rpcFallbackURL).then(url => {
-					Session.setLocalData('rpcBaseURL', url);
-					return url;
-				});
+				// If ubuspath is not set or invalid, use fallback immediately
+				if (!env.ubuspath || env.ubuspath === 'null') {
+					rpcBaseURL = Promise.resolve(rpcFallbackURL).then(url => {
+						Session.setLocalData('rpcBaseURL', url);
+						return url;
+					});
+				} else {
+					rpcBaseURL = Request.post(env.ubuspath, msg, { nobatch: true }).then(
+						res => res.status == 200 ? env.ubuspath : rpcFallbackURL,
+						() => rpcFallbackURL
+					).then(url => {
+						Session.setLocalData('rpcBaseURL', url);
+						return url;
+					});
+				}
 			}
 
 			return Promise.resolve(rpcBaseURL);
