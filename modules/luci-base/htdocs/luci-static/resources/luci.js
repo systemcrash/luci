@@ -2215,13 +2215,18 @@
 			});
 
 			awaitRpc = Promise.all([
-				this.probeRPCWSSupport(),
 				this.probeRPCBaseURL(),
-				this.require('rpc')
-			]);
-
-			awaitRpc.then(([socket, url, rpcClass]) => {
+				this.require('rpc'),
+			]).then(([url, rpcClass]) => {
 				rpcClass.setBaseURL(url);
+
+				return Promise.all([
+					this.probeSystemFeatures(rpcClass).then(features => this.probeRPCWSSupport(features)),
+					rpcClass,
+				]);
+			});
+
+			awaitRpc.then(([socket, rpcClass]) => {
 				rpcClass.setWebSocket(socket);
 
 				awaitInit = new Promise(resolveFn => {
@@ -2540,7 +2545,13 @@
 		},
 
 		/* DOM setup */
-		probeRPCWSSupport: function() {
+		probeRPCWSSupport: function(features) {
+			// Skip WebSocket probe if uwsd is not available
+			if (!features?.uwsd) {
+				console.debug('Skipping WebSocket probe - uwsd not available');
+				return Promise.resolve(null);
+			}
+
 			const ws_scheme = (location.protocol == 'https:') ? 'wss' : 'ws';
 			const ws_proto = 'org.openwrt.luci.v0';
 			const ws_path = this.url('admin/ws');
@@ -2601,12 +2612,12 @@
 			return Promise.resolve(rpcBaseURL);
 		},
 
-		probeSystemFeatures() {
+		probeSystemFeatures(rpcClass) {
 			if (sysFeatures == null)
 				sysFeatures = Session.getLocalData('features');
 
 			if (!this.isObject(sysFeatures)) {
-				sysFeatures = classes.rpc.declare({
+				sysFeatures = rpcClass.declare({
 					object: 'luci',
 					method: 'getFeatures',
 					expect: { '': {} }
@@ -2621,12 +2632,12 @@
 			return Promise.resolve(sysFeatures);
 		},
 
-		probePreloadClasses() {
+		probePreloadClasses(rpcClass) {
 			if (preloadClasses == null)
 				preloadClasses = Session.getLocalData('preload');
 
 			if (!Array.isArray(preloadClasses)) {
-				preloadClasses = this.resolveDefault(classes.rpc.declare({
+				preloadClasses = this.resolveDefault(rpcClass.declare({
 					object: 'file',
 					method: 'list',
 					params: [ 'path' ],
@@ -2751,8 +2762,7 @@
 			});
 
 			return Promise.all([
-				this.probeSystemFeatures(),
-				this.probePreloadClasses()
+				this.probePreloadClasses(classes.rpc)
 			]).finally(LuCI.prototype.bind(function() {
 				const tasks = [];
 

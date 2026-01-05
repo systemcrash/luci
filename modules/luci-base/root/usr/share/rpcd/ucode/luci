@@ -242,6 +242,7 @@ const methods = {
 				ufpd:       access('/usr/sbin/ufpd') == true,
 				vrf:        access('/sys/module/vrf/refcnt') == true, // vrf.ko is loaded
 				netifd_vrf: false,
+				uwsd:       access('/usr/sbin/uwsd') == true && init_enabled('uwsd') == true && init_action('uwsd', 'running') == 0,
 			};
 
 			const wifi_features = [ 
