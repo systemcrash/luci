@@ -395,9 +395,7 @@ var status = baseclass.extend({
 					}
 				}
 			}
-			var text = "";
-			var outputFile = reply.status.outputFile;
-			var outputCache = reply.status.outputCache;
+			let text = "";
 
 			var header = E("h2", {}, _("AdBlock-Fast - Status"));
 			var statusTitle = E(
@@ -479,7 +477,7 @@ var status = baseclass.extend({
 					{ class: "cbi-value-title" },
 					_("Service Warnings"),
 				);
-				var text = "";
+				let text = "";
 				reply.ubus.warnings.forEach((element) => {
 					if (element.code && pkg.warningTable[element.code]) {
 						text += pkg.formatMessage(
@@ -509,7 +507,7 @@ var status = baseclass.extend({
 					{ class: "cbi-value-title" },
 					_("Service Errors"),
 				);
-				var text = "";
+				let text = "";
 				reply.ubus.errors.forEach((element) => {
 					if (element.code && pkg.errorTable[element.code]) {
 						text += pkg.formatMessage(

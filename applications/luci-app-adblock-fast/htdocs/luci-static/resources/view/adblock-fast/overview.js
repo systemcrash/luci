@@ -383,7 +383,7 @@ return view.extend({
 			_("Update Hour"),
 			_("Hour of day to run the update (0-23)."),
 		);
-		for (var i = 0; i < 24; i++) {
+		for (let i = 0; i < 24; i++) {
 			var hourLabel = i < 10 ? "0" + i : "" + i;
 			o.value(String(i), hourLabel);
 		}
@@ -402,7 +402,7 @@ return view.extend({
 				"Minute of hour to run the update (0-59). In 'Every N hours' mode, updates run at the selected minute within each interval.",
 			),
 		);
-		for (var i = 0; i < 60; i++) {
+		for (let i = 0; i < 60; i++) {
 			var minuteLabel = i < 10 ? "0" + i : "" + i;
 			o.value(String(i), minuteLabel);
 		}
@@ -433,7 +433,7 @@ return view.extend({
 			_("Day of Month"),
 			_("Run on the selected day of month."),
 		);
-		for (var i = 1; i <= 31; i++) {
+		for (let i = 1; i <= 31; i++) {
 			o.value(String(i), String(i));
 		}
 		o.default = "1";
@@ -446,7 +446,7 @@ return view.extend({
 			_("Every N days"),
 			_("Run once every N days."),
 		);
-		for (var i = 1; i <= 31; i++) {
+		for (let i = 1; i <= 31; i++) {
 			o.value(String(i), String(i));
 		}
 		o.default = "3";
@@ -459,7 +459,7 @@ return view.extend({
 			_("Every N hours"),
 			_("Run once every N hours."),
 		);
-		for (var i = 1; i <= 23; i++) {
+		for (let i = 1; i <= 23; i++) {
 			o.value(String(i), String(i));
 		}
 		o.default = "6";
