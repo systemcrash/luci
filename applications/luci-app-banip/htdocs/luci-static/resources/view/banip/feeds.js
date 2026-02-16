@@ -177,19 +177,13 @@ return view.extend({
 	},
 
 	render: function (data) {
-		let m, s, o, feed, url_4, url_6, rule, chain, descr, flag;
+		let m, s, o, feed;
 
 		m = new form.JSONMap(data, null, _('With this editor you can upload your local custom feed file or fill up an initial one (a 1:1 copy of the version shipped with the package). \
 			The file is located at \'/etc/banip/banip.custom.feeds\'. \
 			Then you can edit this file, delete entries, add new ones or make a local backup. To go back to the maintainers version just clear the custom feed file.'));
 		for (let i = 0; i < Object.keys(m.data.data).length; i++) {
 			feed = Object.keys(m.data.data)[i];
-			url_4 = m.data.data[feed].url_4;
-			url_6 = m.data.data[feed].url_6;
-			rule = m.data.data[feed].rule;
-			chain = m.data.data[feed].chain;
-			descr = m.data.data[feed].descr;
-			flag = m.data.data[feed].flag;
 
 			s = m.section(form.TypedSection, feed, null);
 			s.addremove = true;
@@ -213,7 +207,7 @@ return view.extend({
 				if (!value) {
 					return true;
 				}
-				if (!value.match(/^(http:\/\/|https:\/\/)[A-Za-z0-9\/\.\-\?\&\+_@%=:~#]+$/)) {
+				if (!value.match(/^(http:\/\/|https:\/\/)[A-Za-z0-9/.\-?&+_@%=:~#]+$/)) {
 					return _('Protocol/URL format not supported');
 				}
 				return true;
@@ -224,7 +218,7 @@ return view.extend({
 				if (!value) {
 					return true;
 				}
-				if (!value.match(/^(http:\/\/|https:\/\/)[A-Za-z0-9\/\.\-\?\&\+_@%=:~#]+$/)) {
+				if (!value.match(/^(http:\/\/|https:\/\/)[A-Za-z0-9/.\-?&+_@%=:~#]+$/)) {
 					return _('Protocol/URL format not supported');
 				}
 				return true;
@@ -258,7 +252,7 @@ return view.extend({
 				if (!value) {
 					return true;
 				}
-				if (!value.match(/^(\bgz\b|\btcp\b|\budp\b|\b[0-9\-]+\b| )*$/)) {
+				if (!value.match(/^(\bgz\b|\btcp\b|\budp\b|\b[0-9-]+\b| )*$/)) {
 					return _('Flag not supported');
 				}
 				return true;

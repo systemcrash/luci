@@ -269,9 +269,8 @@ return view.extend({
 			let btns = [
 				E('button', {
 					'class': 'btn cbi-button drag-handle right',
-					'style': 'float:none;margin-right:.4em;',
+					'style': 'float:none;margin-right:.4em; cursor:move',
 					'title': _('Drag to reorder'),
-					'style': 'cursor:move',
 					'disabled': this.map.readonly || null
 				}, '☰'),
 				E('button', {

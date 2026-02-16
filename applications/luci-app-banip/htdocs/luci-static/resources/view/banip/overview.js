@@ -356,7 +356,7 @@ return view.extend({
 		o.optional = true;
 		o.rmempty = true;
 
-		o = s.taboption('adv_chain', form.Value, 'ban_allowflag', _('Allow Protocol/Ports'), _('Always allow a protocol \(tcp/udp\) with certain ports or port ranges in WAN-Input and WAN-Forward chain.'));
+		o = s.taboption('adv_chain', form.Value, 'ban_allowflag', _('Allow Protocol/Ports'), _('Always allow a protocol (tcp/udp) with certain ports or port ranges in WAN-Input and WAN-Forward chain.'));
 		o.placeholder = 'tcp 80 443-445';
 		o.rmempty = true;
 
@@ -615,7 +615,7 @@ return view.extend({
 			if (!value) {
 				return _('Empty field not allowed');
 			}
-			if (!value.match(/^[A-Za-z0-9\.\:]+$/)) {
+			if (!value.match(/^[A-Za-z0-9.:]+$/)) {
 				return _('Invalid characters');
 			}
 			return true;
@@ -751,7 +751,7 @@ return view.extend({
 				if (!value) {
 					return true;
 				}
-				if (!value.match(/^(http:\/\/|https:\/\/)[A-Za-z0-9\/\.\-_\?\&\+=:~#]+$/)) {
+				if (!value.match(/^(http:\/\/|https:\/\/)[A-Za-z0-9/.\-_?&+=:~#]+$/)) {
 					return _('Protocol/URL format not supported');
 				}
 				return true;

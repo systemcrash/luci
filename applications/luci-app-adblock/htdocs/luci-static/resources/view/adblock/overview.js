@@ -654,7 +654,7 @@ return view.extend({
 		o.default = '<hr style="width: 200px; height: 1px;" /><em style="color:#37c;font-weight:bold;">' + _('UTCapitole Archive Selection') + '</em>';
 
 		o = s.taboption('feeds', form.DynamicList, 'adb_utc_feed', _('Categories'));
-		for (var i = 0; i < categories.length; i++) {
+		for (let i = 0; i < categories.length; i++) {
 			code = categories[i].match(/^(\w+);/)[1].trim();
 			if (code === 'utc') {
 				category = categories[i].match(/^\w+;(.*$)/)[1].trim();
@@ -669,7 +669,7 @@ return view.extend({
 		o.default = '<hr style="width: 200px; height: 1px;" /><em style="color:#37c;font-weight:bold;">' + _('StevenBlack List Selection') + '</em>';
 
 		o = s.taboption('feeds', form.DynamicList, 'adb_stb_feed', _('Categories'));
-		for (var i = 0; i < categories.length; i++) {
+		for (let i = 0; i < categories.length; i++) {
 			code = categories[i].match(/^(\w+);/)[1].trim();
 			if (code === 'stb') {
 				list = categories[i].match(/^\w+;(.*);/)[1].trim();
@@ -685,7 +685,7 @@ return view.extend({
 		o.default = '<hr style="width: 200px; height: 1px;" /><em style="color:#37c;font-weight:bold;">' + _('Hagezi List Selection') + '</em>';
 
 		o = s.taboption('feeds', form.DynamicList, 'adb_hag_feed', _('Categories'));
-		for (var i = 0; i < categories.length; i++) {
+		for (let i = 0; i < categories.length; i++) {
 			code = categories[i].match(/^(\w+);/)[1].trim();
 			if (code === 'hag') {
 				list = categories[i].match(/^\w+;(.*);/)[1].trim();
@@ -701,7 +701,7 @@ return view.extend({
 		o.default = '<hr style="width: 200px; height: 1px;" /><em style="color:#37c;font-weight:bold;">' + _('1Hosts List Selection') + '</em>';
 
 		o = s.taboption('feeds', form.DynamicList, 'adb_hst_feed', _('Categories'));
-		for (var i = 0; i < categories.length; i++) {
+		for (let i = 0; i < categories.length; i++) {
 			code = categories[i].match(/^(\w+);/)[1].trim();
 			if (code === 'hst') {
 				list = categories[i].match(/^\w+;(.*);/)[1].trim();

@@ -29,8 +29,8 @@ function handleAction(ev) {
 					'click': ui.createHandlerFn(this, function (ev) {
 						L.resolveDefault(fs.read_direct('/etc/adblock/adblock.blocklist'), '')
 							.then(function (res) {
-								var domain = document.getElementById('blocklist').value.trim().toLowerCase().replace(/[^a-z0-9\.\-]/g, '');
-								var pattern = new RegExp('^' + domain.replace(/[\.]/g, '\\.') + '$', 'm');
+								var domain = document.getElementById('blocklist').value.trim().toLowerCase().replace(/[^a-z0-9.-]/g, '');
+								var pattern = new RegExp('^' + domain.replace(/[.]/g, '\\.') + '$', 'm');
 								if (res.search(pattern) === -1) {
 									var blocklist = res + domain + '\n';
 									fs.write('/etc/adblock/adblock.blocklist', blocklist);
@@ -67,8 +67,8 @@ function handleAction(ev) {
 					'click': ui.createHandlerFn(this, function (ev) {
 						L.resolveDefault(fs.read_direct('/etc/adblock/adblock.allowlist'), '')
 							.then(function (res) {
-								var domain = document.getElementById('allowlist').value.trim().toLowerCase().replace(/[^a-z0-9\.\-]/g, '');
-								var pattern = new RegExp('^' + domain.replace(/[\.]/g, '\\.') + '$', 'm');
+								var domain = document.getElementById('allowlist').value.trim().toLowerCase().replace(/[^a-z0-9.-]/g, '');
+								var pattern = new RegExp('^' + domain.replace(/[.]/g, '\\.') + '$', 'm');
 								if (res.search(pattern) === -1) {
 									var allowlist = res + domain + '\n';
 									fs.write('/etc/adblock/adblock.allowlist', allowlist);
@@ -120,7 +120,7 @@ function handleAction(ev) {
 				E('button', {
 					'class': 'btn cbi-button-action',
 					'click': ui.createHandlerFn(this, function (ev) {
-						const domain = document.getElementById('search').value.trim().toLowerCase().replace(/[^a-z0-9\.\-]/g, '');
+						const domain = document.getElementById('search').value.trim().toLowerCase().replace(/[^a-z0-9.-]/g, '');
 						if (domain) {
 							document.getElementById('run').classList.add("spinning");
 							document.getElementById('search').value = domain;
@@ -195,7 +195,7 @@ function handleAction(ev) {
 						this.classList.add('spinning');
 						const top_count = document.getElementById('top_count').value;
 						const res_count = document.getElementById('res_count').value;
-						const search = document.getElementById('search').value.trim().replace(/[^\w\.\-\:]/g, '') || '+';
+						const search = document.getElementById('search').value.trim().replace(/[^\w.\-:]/g, '') || '+';
 						L.resolveDefault(fs.exec_direct('/etc/init.d/adblock', ['report', 'gen', top_count, res_count, search]), '')
 							.then(function () {
 								location.reload();
@@ -365,7 +365,7 @@ return view.extend({
 
 		const page = E('div', { 'class': 'cbi-map', 'id': 'map' }, [
 			E('div', { 'class': 'cbi-section' }, [
-				E('p', _('This tab displays the most recently generated DNS report. Use the \‘Refresh\’ button to update it.')),
+				E('p', _('This tab displays the most recently generated DNS report. Use the "Refresh" button to update it.')),
 				E('div', { 'class': 'cbi-value', 'style': 'position:relative;min-height:220px' }, [
 					E('div', {
 						'style': 'position:absolute; top:0; right:0; text-align:center'

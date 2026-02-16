@@ -40,7 +40,7 @@ return view.extend({
 		]);
 	},
 	handleSave: function (ev) {
-		let value = ((document.querySelector('textarea').value || '').trim().toLowerCase().replace(/[^a-z0-9\.\-# \r\n]/g, '').replace(/\r\n?/g, '\n'));
+		let value = ((document.querySelector('textarea').value || '').trim().toLowerCase().replace(/[^a-z0-9.\-# \r\n]/g, '').replace(/\r\n?/g, '\n'));
 		return fs.write(localFile, value + "\n")
 		.then(function () {
 			document.querySelector('textarea').value = value;

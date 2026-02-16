@@ -166,7 +166,7 @@ return view.extend({
 			main map
 		*/
 		m = new form.Map('travelmate', 'Travelmate', _('Configuration of the travelmate package to enable travel router functionality. \
-			For further information %s.'.format(`<a href="https://github.com/openwrt/packages/blob/master/net/travelmate/files/README.md" target="_blank" rel="noreferrer noopener" >${_('check the online documentation')}</a>`)) + '<br />' + \
+			For further information %s.'.format(`<a href="https://github.com/openwrt/packages/blob/master/net/travelmate/files/README.md" target="_blank" rel="noreferrer noopener" >${_('check the online documentation')}</a>`)) + '<br />' +
 			_('<b><em>Please note:</em></b> On first start please call the \'Interface Wizard\' once, to make the necessary network- and firewall settings.'));
 
 		/*
